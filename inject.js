@@ -25,19 +25,13 @@ function forceThrough(fn, timeoutId) {
   let i = 0;
 
   const cb = success => {
-    if (!success && i < 20) {
+    if (!success && i < 50) {
       i++;
       timeoutId = window.setTimeout(() => fn(cb), 50);
     }
   };
 
   fn(cb);
-}
-
-let theatreTimeout;
-
-function enterTheatre() {
-  forceThrough(clickTheatre, theatreTimeout);
 }
 
 function clickTheatre(cb) {
@@ -52,8 +46,60 @@ function clickTheatre(cb) {
   }
 }
 
+function observeChat(cb) {
+  const log = document.querySelector(`[role="log"]`);
+
+  if (typeof cb === "function") {
+    cb(!!log);
+  }
+
+  if (!log) {
+    return;
+  }
+
+  const observer = new MutationObserver(handleLogMutation);
+
+  observer.observe(log, {
+    childList: true
+  });
+}
+
+const HIGHLIGHTED_WORDS = ["mest", "mesty", "mestyo"];
+
+function wordInString(s, word) {
+  return new RegExp(`\\b${word}\\b`, "i").test(s);
+}
+
+function handleLogMutation(mutationList) {
+  mutationList.forEach((mutation) => {
+    switch(mutation.type) {
+      case "childList":
+        mutation.addedNodes.forEach(node => {
+          const text = node.querySelector(".text-fragment");
+
+          if (!text) {
+            return;
+          }
+
+          if (HIGHLIGHTED_WORDS.some(word => wordInString(text.innerHTML.toLowerCase(), word))) {
+            handleHighlightedMessage(node);
+          }
+        });
+        break;
+    }
+  });
+}
+
+function handleHighlightedMessage(node) {
+  node.style.backgroundImage = "linear-gradient(to right, rgba(191, 54, 12, 0), rgba(191, 54, 12, 1))";
+}
+
+let theatreTimeout;
+let logTimeout;
+
 function initView() {
-  enterTheatre();
+  forceThrough(clickTheatre, theatreTimeout);
+  forceThrough(observeChat,  logTimeout);
 }
 
 function handleLoad() {
