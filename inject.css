@@ -4,11 +4,16 @@
 
 .chat-line__message {
   position: relative;
-  transition: background-color 200ms;
+  transition-duration: 200ms;
+  transition-property: background-color, opacity;
 }
 
 .chat-line__message:hover {
   background-color: rgba(0, 0, 0, .05);
+}
+
+.chat-line__message[style]:hover {
+  opacity: 1 !important;
 }
 
 .tw-root--theme-dark .chat-line__message:hover {
@@ -48,6 +53,7 @@
 
 [role="log"] {
   max-height: 100%;
+  max-width: 100%;
   transition: height 200ms;
   backface-visibility: hidden;
 }
