@@ -76,6 +76,11 @@ function handleLogMutation(mutationList) {
       case "childList":
         mutation.addedNodes.forEach(node => {
           const text = node.querySelector(".text-fragment");
+          const me   = node.querySelector(`[data-a-user="mestyo"]`);
+
+          if (me) {
+            node.style.opacity = ".75";
+          }
 
           if (text) {
             if (HIGHLIGHTED_WORDS.some(w => wordInString(text.innerHTML.toLowerCase(), w))) {
@@ -89,7 +94,7 @@ function handleLogMutation(mutationList) {
 }
 
 function handleHighlightedMessage(node) {
-  node.style.backgroundImage = "linear-gradient(to right, rgba(191, 54, 12, 0), rgba(191, 54, 12, 1))";
+  node.style.backgroundImage = "linear-gradient(to right, rgba(100, 65, 164, 0), rgba(100, 65, 164, 1))";
 }
 
 let theatreTimeout;
