@@ -77,12 +77,10 @@ function handleLogMutation(mutationList) {
         mutation.addedNodes.forEach(node => {
           const text = node.querySelector(".text-fragment");
 
-          if (!text) {
-            return;
-          }
-
-          if (HIGHLIGHTED_WORDS.some(word => wordInString(text.innerHTML.toLowerCase(), word))) {
-            handleHighlightedMessage(node);
+          if (text) {
+            if (HIGHLIGHTED_WORDS.some(w => wordInString(text.innerHTML.toLowerCase(), w))) {
+              handleHighlightedMessage(node);
+            }
           }
         });
         break;
