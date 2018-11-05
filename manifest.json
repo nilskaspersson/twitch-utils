@@ -6,14 +6,9 @@
   "permissions": [
     "notifications"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://www.twitch.tv/*"
-      ],
-      "js": [
-        "inject.js"
-      ]
-    }
-  ]
+  "content_scripts": [{
+    "matches": ["https://www.twitch.tv/*"],
+    "js": ["inject.js"],
+    "css": ["inject.css"]
+  }]
 }
