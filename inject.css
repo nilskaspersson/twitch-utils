@@ -65,3 +65,7 @@
 .chat-badge + .chat-badge {
   margin-left: .25rem !important;
 }
+
+.tw-pd-y-1 {
+  flex: 1 1 auto;
+}
