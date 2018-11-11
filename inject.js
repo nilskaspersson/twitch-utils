@@ -48,6 +48,9 @@ function clickTheatre(cb) {
   }
 }
 
+const NOTIFICATION_AREA = document.createElement("aside");
+      NOTIFICATION_AREA.classList.add("notification-area");
+
 function observeChat(cb) {
   const log = document.querySelector(`[role="log"]`);
 
@@ -59,6 +62,8 @@ function observeChat(cb) {
     return;
   }
 
+  log.appendChild(NOTIFICATION_AREA);
+
   const observer = new MutationObserver(handleLogMutation);
 
   observer.observe(log, {
@@ -66,7 +71,11 @@ function observeChat(cb) {
   });
 }
 
-const HIGHLIGHTED_WORDS = [USERNAME, "mest"];
+const HIGHLIGHTED_WORDS = [USERNAME];
+
+chrome.storage.sync.get("highlights", ({ highlights }) =>
+  highlights.split(",").forEach(w => HIGHLIGHTED_WORDS.push(w.trim()))
+);
 
 function wordInString(s, word) {
   return word.includes(s);
@@ -91,11 +100,12 @@ function handleLogMutation(mutationList) {
 
           if (text && name !== USERNAME) {
             if (HIGHLIGHTED_WORDS.some(w => wordInString(text.textContent.toLowerCase(), w))) {
-              handleHighlightedMessage(node);
-
               if (document.visibilityState === "hidden") {
                 sendNotification(text.textContent, name);
+                NOTIFICATION_AREA.appendChild(node);
               }
+
+              handleHighlightedMessage(node);
             }
           }
         });
