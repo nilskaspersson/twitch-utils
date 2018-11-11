@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "A lightweight collection of small Twitch utilities",
   "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
   "permissions": [
     "notifications"
   ],
