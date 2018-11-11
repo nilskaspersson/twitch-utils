@@ -20,6 +20,8 @@ const inlineScript           = document.createElement("script");
 
 document.getElementsByTagName("head")[0].appendChild(inlineScript);
 
+const USERNAME = document.querySelector(`[data-a-target="user-display-name"]`).textContent;
+
 function forceThrough(fn, timeoutId) {
   window.clearTimeout(timeoutId);
   let i = 0;
@@ -64,10 +66,10 @@ function observeChat(cb) {
   });
 }
 
-const HIGHLIGHTED_WORDS = ["mest", "mesty", "mestyo"];
+const HIGHLIGHTED_WORDS = [USERNAME, "mest"];
 
 function wordInString(s, word) {
-  return new RegExp(`\\b${word}\\b`, "i").test(s);
+  return word.includes(s);
 }
 
 function handleLogMutation(mutationList) {
@@ -76,21 +78,38 @@ function handleLogMutation(mutationList) {
       case "childList":
         mutation.addedNodes.forEach(node => {
           const text = node.querySelector(".text-fragment");
-          const me   = node.querySelector(`[data-a-user="mestyo"]`);
 
-          if (me) {
+          if (!text) {
+            return;
+          }
+
+          const name = node.querySelector("[data-a-user]").textContent;
+
+          if (name.toLowerCase() === USERNAME) {
             node.style.opacity = ".75";
           }
 
-          if (text) {
-            if (HIGHLIGHTED_WORDS.some(w => wordInString(text.innerHTML.toLowerCase(), w))) {
+          if (text && name !== USERNAME) {
+            if (HIGHLIGHTED_WORDS.some(w => wordInString(text.textContent.toLowerCase(), w))) {
               handleHighlightedMessage(node);
+
+              if (document.visibilityState === "hidden") {
+                sendNotification(text.textContent, name);
+              }
             }
           }
         });
         break;
     }
   });
+}
+
+function sendNotification(message, title) {
+  chrome.runtime.sendMessage(null, JSON.stringify({
+    message : message,
+    title   : title,
+    type    : "NOTIFICATION"
+  }));
 }
 
 function handleHighlightedMessage(node) {
